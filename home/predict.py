@@ -31,7 +31,6 @@ df = {}
 def editSymptom(text):
     #     print(text)
     if type(text) == str:
-        text = text.lower()
         text = nltk.word_tokenize(text)
 
 #         print(text)
@@ -69,9 +68,20 @@ def main():
 
 
 def predictOut(text):
+    text = text.lower()
+    botin = {'greet': ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening', 'good night', 'hai', 'hoi', 'heey', 'healthkonvo'], 'bye': [
+        'thanks', 'thank you', 'thank', 'thank u', 'bye', 'byee', 'good bye'], 'hru': ['how are you', 'how r u', 'how r you', 'how are u', 'whats up', "what's up"], 'no': ['no', 'no thanks'], 'yes': ['yes', 'I want to know', 'yes i want to know', 'yes i want', 'yes, i want', 'yes, i want to know'],
+        'help': ['i need your help', 'i need you', 'i want your help', 'can you help', 'can you help me?', 'can you help me', 'can u help me']
+    }
+
+    botout = {'greet': 'Hello, I am healthKonvo, a disease diagnosis bot. Send me a list of symptoms , i will diagnose the disease.',
+              'hru': 'I am fine.', 'bye': 'Do you want to know something more?', 'no': 'Happy to help you.', 'help': 'How can I help you?'}
+    for i in botin:
+        if text in botin[i]:
+            return botout[i]
     edited = editSymptom(text)
-    # print(edited)
     edited = ' '.join(edited)
+
     res = process.extract(edited, df['symptoms'], limit=10)
 
     ind = res[0][2]
