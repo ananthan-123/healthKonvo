@@ -80,6 +80,8 @@ def predictOut(text):
         if text in botin[i]:
             return botout[i]
     edited = editSymptom(text)
+    if len(edited) == 0:
+        return "Hey , I can't diagnose your disease. Please share all symptoms and conditions you have."
     edited = ' '.join(edited)
 
     res = process.extract(edited, df['symptoms'], limit=10)
