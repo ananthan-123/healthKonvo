@@ -12,37 +12,18 @@ nltk.download('averaged_perceptron_tagger')
 df = {}
 
 
-# def editSymptom(text):
-#     #     print(type(text))
-#     if type(text) == str:
-#         text = nltk.word_tokenize(text)
-#         pos_tagged = nltk.pos_tag(text)
-# #         print(pos_tagged)
-#         nouns = filter(lambda x: x[1] == 'NN' or x[1] == 'NNS' or x[1] == 'NNP' or x[1] == 'NNPS' or x[1] == 'PRP' or x[1] == 'PRP$' or x[1] == 'RB' or x[1]
-#                        == 'RBR' or x[1] == 'RBS' or x[1] == 'VB' or x[1] == 'VBG' or x[1] == 'VBD' or x[1] == 'VBN' or x[1] == 'VBP' or x[1] == 'VBZ', pos_tagged)
-# #         print(list(nouns))
-#         result = []
-#         for i in nouns:
-#             result.append(i[0])
-#         return result
-#     return None
-
-
 def editSymptom(text):
     #     print(text)
     if type(text) == str:
         text = nltk.word_tokenize(text)
-
-#         print(text)
-
         res = []
 
         for i in text:
             b = TextBlob(i)
             res.append(str(b.correct()))
 
-        lemmatizer = WordNetLemmatizer()
-        result = []
+        # lemmatizer = WordNetLemmatizer()
+        # result = []
         result1 = []
         unwanted = ['i', 'am', 'be', 'are', 'is', 'was', 'were', 'being', 'can', 'could', 'do', 'did', 'does', 'doing',
                     'have', 'had', 'has', 'having', 'may', 'might', 'must', 'shall', 'should', 'will', 'would', 'days', 'day']
@@ -75,26 +56,59 @@ def predictOut(text):
     }
 
     botout = {'greet': 'Hello, I am healthKonvo, a disease diagnosis bot. Send me a list of symptoms , i will diagnose the disease.',
-              'hru': 'I am fine.', 'bye': 'Do you want to know something more?', 'no': 'Happy to help you.', 'help': 'How can I help you?'}
+              'hru': 'I am fine.', 'bye': 'Do you want to know something more?', 'no': 'Happy to help you.', 'yes': 'How can I help you?', 'help': 'How can I help you?'}
     for i in botin:
         if text in botin[i]:
-            return botout[i]
+            return {'text': botout[i], 'details': ''}
+
     edited = editSymptom(text)
+
+    # print(edited)
+
     if len(edited) == 0:
-        return "Hey , I can't diagnose your disease. Please share all symptoms and conditions you have."
+        return {'text': "Hey , I can't diagnose your disease. Please share all symptoms and conditions you have.", 'details': ''}
     edited = ' '.join(edited)
 
     res = process.extract(edited, df['symptoms'], limit=10)
+
+    print(res)
 
     ind = res[0][2]
 
     dis = df.iloc[ind]
 
-    print(dis[0])
+    print(dis)
 
     resp = 'I think you have '+dis[0]
 
-    return resp
+    det = {}
+
+    # print(type(dis[1]))
+
+    if type(dis[1]) == str:
+        # print('hai')
+        det['About disease'] = dis[1]
+    if type(dis[3]) == str:
+        det['Causes'] = dis[3]
+    if type(dis[4]) == str:
+        det['Diagnosis'] = dis[4]
+    if type(dis[5]) == str:
+        det['Management'] = dis[5]
+    if type(dis[6]) == str:
+        det['Complications'] = dis[6]
+    if type(dis[7]) == str:
+        det['Prevention'] = dis[7]
+    if type(dis[8]) == str:
+        det['Classification'] = dis[8]
+    if type(dis[9]) == str:
+        det['Transmission'] = dis[9]
+    if type(dis[10]) == str:
+        det['Treatment'] = dis[10]
+
+    # print({'text': resp, 'details': det})
+
+    return {'text': resp, 'details': det}
+    # return "hai"
 
 
 main()

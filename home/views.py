@@ -1,3 +1,4 @@
+import json
 from django.http import response
 
 from .predict import predictOut
@@ -19,6 +20,9 @@ def home(request):
 
 @ csrf_exempt
 def get_bot_response(request):
-    userText = request.GET.get('msg')
+    userText = request.POST.get('msg')
     out = predictOut(userText)
+    # out = json.dumps(out)
+    # print(out)
+    # return HttpResponse(json.dumps(out))
     return JsonResponse({'res': out})
