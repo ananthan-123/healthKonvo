@@ -41,6 +41,31 @@ def editSymptom(text):
         return []
 
 
+def findSimilarity(text):
+    similarDict = {}
+    finalList = []
+    for i in text:
+        for j in range(len(df['symptoms'])):
+            temp = []
+            if len(df['symptoms'][j]) != 0:
+                for k in df['symptoms'][j]:
+                    temp.append(fuzz.partial_ratio(i, k))
+
+                if j not in similarDict:
+                    similarDict[j] = {}
+                print('temp--->>>', temp)
+                similarDict[j][i] = max(temp)
+            else:
+                if j not in similarDict:
+                    similarDict[j] = {}
+                similarDict[j][i] = 0
+
+    for i in range(len(similarDict)):
+        finalList.append(sum(similarDict[i].values()))
+
+    return finalList.index(max(finalList))
+
+
 def main():
     global df
     df = pd.read_csv(r'home/final-disease.csv',
@@ -67,17 +92,19 @@ def predictOut(text):
 
     if len(edited) == 0:
         return {'text': "Hey , I can't diagnose your disease. Please share all symptoms and conditions you have.", 'details': ''}
-    edited = ' '.join(edited)
+    # edited = ' '.join(edited)
 
-    res = process.extract(edited, df['symptoms'], limit=10)
+    # res = process.extract(edited, df['symptoms'], limit=10)
 
-    print(res)
+    ind = findSimilarity(edited)
 
-    ind = res[0][2]
+    print(ind)
+
+    # ind = res[0][2]
 
     dis = df.iloc[ind]
 
-    print(dis)
+    # print(dis)
 
     resp = 'I think you have '+dis[0]
 
