@@ -12,11 +12,24 @@ nltk.download('averaged_perceptron_tagger')
 df = {}
 
 
+def levenshtein(a, b):
+    m = [[*range(len(a) + 1)] for _ in range(len(b) + 1)]
+    for i in range(len(b) + 1):
+        m[i][0] = i
+    for i in range(1, len(b) + 1):
+        for j in range(1, len(a) + 1):
+            m[i][j] = min(m[i-1][j] + 1, m[i][j-1] + 1,
+                          m[i-1][j-1] + (b[i-1] != a[j-1]))
+    return m[-1][-1]
+
+
 def editSymptom(text):
     #     print(text)
     if type(text) == str:
         text = nltk.word_tokenize(text)
         res = []
+
+        # print(text)
 
         for i in text:
             b = TextBlob(i)
@@ -29,12 +42,16 @@ def editSymptom(text):
                     'have', 'had', 'has', 'having', 'may', 'might', 'must', 'shall', 'should', 'will', 'would', 'days', 'day']
         pos_tagged = nltk.pos_tag(res)
 
+        print(pos_tagged)
+
         text = filter(lambda x: x[1] == 'NN' or x[1] == 'NNS' or x[1] == 'NNP' or x[1] == 'JJ' or x[1] == 'NNPS' or x[1] == 'PRP' or x[1] == 'PRP$' or x[1] ==
                       'RB' or x[1] == 'RBR' or x[1] == 'RBS' or x[1] == 'VB' or x[1] == 'VBG' or x[1] == 'VBD' or x[1] == 'VBN' or x[1] == 'VBP' or x[1] == 'VBZ', pos_tagged)
         for i in text:
             if i[0] not in unwanted:
                 tem = i[0].replace('.', '')
                 result1.append(tem)
+
+        print(result1)
         return result1
 
     else:
@@ -53,7 +70,7 @@ def findSimilarity(text):
 
                 if j not in similarDict:
                     similarDict[j] = {}
-                print('temp--->>>', temp)
+                # print('temp--->>>', temp)
                 similarDict[j][i] = max(temp)
             else:
                 if j not in similarDict:
